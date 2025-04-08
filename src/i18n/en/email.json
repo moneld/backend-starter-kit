@@ -1,0 +1,52 @@
+{
+  "common": {
+    "greeting": "Hello {name},",
+    "signature": "Best regards,",
+    "team": "The {appName} team",
+    "footer": "This email was sent automatically, please do not reply to it.",
+    "copyright": "© {year} {appName}. All rights reserved."
+  },
+  "verification": {
+    "subject": "Verify your email address",
+    "title": "Email Verification",
+    "message": "Thank you for signing up with {appName}. To complete your registration, please verify your email address by clicking the button below:",
+    "button": "Verify my email",
+    "expiration": "This link will expire in {hours} hours.",
+    "help": "If you did not create an account, you can safely ignore this email.",
+    "already_verified": "If you've already verified your email, you can disregard this message."
+  },
+  "reset_password": {
+    "subject": "Reset your password",
+    "title": "Password Reset",
+    "message": "We received a request to reset the password for your account. To reset your password, please click the button below:",
+    "button": "Reset my password",
+    "expiration": "This link will expire in {minutes} minutes.",
+    "help": "If you did not request a password reset, please ignore this email. Your password will remain unchanged.",
+    "security": "For your security, if you did not request this reset, please check your account security."
+  },
+  "two_factor": {
+    "subject": "Recovery codes for two-factor authentication",
+    "title": "Two-Factor Authentication Recovery Codes",
+    "message": "You have enabled two-factor authentication on your account. Here are your recovery codes:",
+    "codes_intro": "Please keep these codes in a safe place. They will allow you to log in to your account if you lose access to your authenticator app:",
+    "warning": "These codes are one-time use only and can only be used once each.",
+    "security": "For your security, do not share these codes with anyone."
+  },
+  "account_locked": {
+    "subject": "Your account has been temporarily locked",
+    "title": "Account Temporarily Locked",
+    "message": "Your account has been temporarily locked due to multiple failed login attempts.",
+    "unlock_time": "Your account will be automatically unlocked in {minutes} minutes.",
+    "security": "If you did not make these attempts, please check your account security and consider changing your password as soon as possible.",
+    "help": "If you need assistance, please contact our support team."
+  },
+  "welcome": {
+    "subject": "Welcome to {appName}",
+    "title": "Welcome to {appName}",
+    "message": "We're excited to have you on board. Your account has been successfully created.",
+    "next_steps": "Next Steps",
+    "complete_profile": "Complete your profile",
+    "explore_features": "Explore features",
+    "help": "If you have any questions, please check our documentation or contact our support team."
+  }
+}

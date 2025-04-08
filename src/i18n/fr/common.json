@@ -1,0 +1,62 @@
+{
+  "welcome": "Bienvenue sur l'API NestJS Fastify Starter",
+  "errors": {
+    "internal_server_error": "Erreur interne du serveur",
+    "not_found": "Ressource non trouvée",
+    "unauthorized": "Non autorisé",
+    "forbidden": "Accès interdit",
+    "bad_request": "Requête incorrecte",
+    "validation": {
+      "isNotEmpty": "{property} ne peut pas être vide",
+      "isString": "{property} doit être une chaîne de caractères",
+      "isEmail": "{property} doit être un email valide",
+      "min": "{property} doit être au moins {constraints.0}",
+      "max": "{property} doit être au maximum {constraints.0}",
+      "minLength": "{property} doit contenir au moins {constraints.0} caractères",
+      "maxLength": "{property} doit contenir au maximum {constraints.0} caractères",
+      "isIn": "{property} doit être l'une des valeurs suivantes : {constraints.0}",
+      "isEnum": "{property} doit être l'une des valeurs suivantes : {constraints.0}",
+      "matchesRegex": "{property} n'est pas au format attendu"
+    }
+  },
+  "success": {
+    "created": "Ressource créée avec succès",
+    "updated": "Ressource mise à jour avec succès",
+    "deleted": "Ressource supprimée avec succès"
+  },
+  "auth": {
+    "login_success": "Connexion réussie",
+    "login_failed": "Identifiants invalides",
+    "logout_success": "Déconnexion réussie",
+    "email_verification_sent": "Un email de vérification a été envoyé",
+    "email_verified": "Email vérifié avec succès",
+    "account_locked": "Compte verrouillé. Veuillez réessayer dans {minutes} minute(s)",
+    "account_inactive": "Compte inactif",
+    "password_reset_sent": "Un email de réinitialisation de mot de passe a été envoyé",
+    "password_reset_success": "Mot de passe réinitialisé avec succès",
+    "two_factor_required": "Authentification à deux facteurs requise",
+    "two_factor_success": "Authentification à deux facteurs réussie",
+    "two_factor_enabled": "Authentification à deux facteurs activée avec succès",
+    "two_factor_disabled": "Authentification à deux facteurs désactivée avec succès"
+  },
+  "users": {
+    "not_found": "Utilisateur non trouvé",
+    "email_exists": "Cet email est déjà utilisé",
+    "profile_updated": "Profil mis à jour avec succès",
+    "role_added": "Rôle ajouté avec succès",
+    "role_removed": "Rôle supprimé avec succès"
+  },
+  "roles": {
+    "not_found": "Rôle non trouvé",
+    "name_exists": "Un rôle avec ce nom existe déjà",
+    "cannot_delete_system_role": "Impossible de supprimer un rôle système",
+    "permission_added": "Permission ajoutée avec succès",
+    "permission_removed": "Permission supprimée avec succès",
+    "permission_exists": "Ce rôle a déjà cette permission"
+  },
+  "permissions": {
+    "not_found": "Permission non trouvée",
+    "name_exists": "Une permission avec ce nom existe déjà",
+    "cannot_delete_system_permission": "Impossible de supprimer une permission système"
+  }
+}

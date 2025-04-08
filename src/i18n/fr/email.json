@@ -1,0 +1,52 @@
+{
+  "common": {
+    "greeting": "Bonjour {name},",
+    "signature": "Cordialement,",
+    "team": "L'équipe {appName}",
+    "footer": "Cet email a été envoyé automatiquement, merci de ne pas y répondre.",
+    "copyright": "© {year} {appName}. Tous droits réservés."
+  },
+  "verification": {
+    "subject": "Vérification de votre adresse email",
+    "title": "Vérification de votre adresse email",
+    "message": "Merci de vous être inscrit sur {appName}. Pour finaliser votre inscription, veuillez vérifier votre adresse email en cliquant sur le bouton ci-dessous :",
+    "button": "Vérifier mon email",
+    "expiration": "Ce lien expire dans {hours} heures.",
+    "help": "Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.",
+    "already_verified": "Si vous avez déjà vérifié votre email, vous pouvez ignorer cet email."
+  },
+  "reset_password": {
+    "subject": "Réinitialisation de votre mot de passe",
+    "title": "Réinitialisation de votre mot de passe",
+    "message": "Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte. Pour réinitialiser votre mot de passe, veuillez cliquer sur le bouton ci-dessous :",
+    "button": "Réinitialiser mon mot de passe",
+    "expiration": "Ce lien expire dans {minutes} minutes.",
+    "help": "Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer cet email. Votre mot de passe restera inchangé.",
+    "security": "Pour votre sécurité, si vous n'avez pas demandé cette réinitialisation, veuillez vérifier la sécurité de votre compte."
+  },
+  "two_factor": {
+    "subject": "Codes de récupération pour l'authentification à deux facteurs",
+    "title": "Codes de récupération pour l'authentification à deux facteurs",
+    "message": "Vous avez activé l'authentification à deux facteurs sur votre compte. Voici vos codes de récupération :",
+    "codes_intro": "Veuillez conserver ces codes dans un endroit sûr. Ils vous permettront de vous connecter à votre compte si vous perdez l'accès à votre application d'authentification :",
+    "warning": "Ces codes sont à usage unique et ne peuvent être utilisés qu'une seule fois chacun.",
+    "security": "Pour votre sécurité, ne partagez ces codes avec personne."
+  },
+  "account_locked": {
+    "subject": "Votre compte a été temporairement verrouillé",
+    "title": "Compte temporairement verrouillé",
+    "message": "Votre compte a été temporairement verrouillé suite à plusieurs tentatives de connexion infructueuses.",
+    "unlock_time": "Votre compte sera déverrouillé automatiquement dans {minutes} minutes.",
+    "security": "Si vous n'êtes pas à l'origine de ces tentatives, veuillez vérifier la sécurité de votre compte et envisager de changer votre mot de passe dès que possible.",
+    "help": "Si vous avez besoin d'aide, n'hésitez pas à contacter notre équipe de support."
+  },
+  "welcome": {
+    "subject": "Bienvenue sur {appName}",
+    "title": "Bienvenue sur {appName}",
+    "message": "Nous sommes ravis de vous compter parmi nos utilisateurs. Votre compte a été créé avec succès.",
+    "next_steps": "Prochaines étapes",
+    "complete_profile": "Complétez votre profil",
+    "explore_features": "Explorez les fonctionnalités",
+    "help": "Si vous avez des questions, n'hésitez pas à consulter notre documentation ou à contacter notre équipe de support."
+  }
+}

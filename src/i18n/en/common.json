@@ -1,0 +1,62 @@
+{
+  "welcome": "Welcome to NestJS Fastify Starter API",
+  "errors": {
+    "internal_server_error": "Internal server error",
+    "not_found": "Resource not found",
+    "unauthorized": "Unauthorized",
+    "forbidden": "Forbidden",
+    "bad_request": "Bad request",
+    "validation": {
+      "isNotEmpty": "{property} cannot be empty",
+      "isString": "{property} must be a string",
+      "isEmail": "{property} must be a valid email",
+      "min": "{property} must be at least {constraints.0}",
+      "max": "{property} must be at most {constraints.0}",
+      "minLength": "{property} must contain at least {constraints.0} characters",
+      "maxLength": "{property} must contain at most {constraints.0} characters",
+      "isIn": "{property} must be one of the following values: {constraints.0}",
+      "isEnum": "{property} must be one of the following values: {constraints.0}",
+      "matchesRegex": "{property} is not in the expected format"
+    }
+  },
+  "success": {
+    "created": "Resource created successfully",
+    "updated": "Resource updated successfully",
+    "deleted": "Resource deleted successfully"
+  },
+  "auth": {
+    "login_success": "Login successful",
+    "login_failed": "Invalid credentials",
+    "logout_success": "Logout successful",
+    "email_verification_sent": "A verification email has been sent",
+    "email_verified": "Email verified successfully",
+    "account_locked": "Account locked. Please try again in {minutes} minute(s)",
+    "account_inactive": "Account inactive",
+    "password_reset_sent": "A password reset email has been sent",
+    "password_reset_success": "Password reset successfully",
+    "two_factor_required": "Two-factor authentication required",
+    "two_factor_success": "Two-factor authentication successful",
+    "two_factor_enabled": "Two-factor authentication enabled successfully",
+    "two_factor_disabled": "Two-factor authentication disabled successfully"
+  },
+  "users": {
+    "not_found": "User not found",
+    "email_exists": "This email is already in use",
+    "profile_updated": "Profile updated successfully",
+    "role_added": "Role added successfully",
+    "role_removed": "Role removed successfully"
+  },
+  "roles": {
+    "not_found": "Role not found",
+    "name_exists": "A role with this name already exists",
+    "cannot_delete_system_role": "Cannot delete a system role",
+    "permission_added": "Permission added successfully",
+    "permission_removed": "Permission removed successfully",
+    "permission_exists": "Role already has this permission"
+  },
+  "permissions": {
+    "not_found": "Permission not found",
+    "name_exists": "A permission with this name already exists",
+    "cannot_delete_system_permission": "Cannot delete a system permission"
+  }
+}
