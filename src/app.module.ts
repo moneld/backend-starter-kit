@@ -5,6 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { SecurityInterceptor } from './common/interceptors/security.interceptor';
 import { LoggerModule } from './common/logger/logger.module';
 import { ConfigModule } from './config';
 import { AuthModule } from './modules/auth/auth.module';
@@ -15,6 +16,9 @@ import { PermissionsModule } from './modules/permissions/permissions.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { DocumentationModule } from './modules/documentation/documentation.module';
+import { HealthModule } from './modules/health/health.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -29,17 +33,46 @@ import { PrismaModule } from './prisma/prisma.module';
 
     I18nModule,
 
-    // Rate Limiting
+    // Rate Limiting - Configuration améliorée
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         return {
           throttlers: [
             {
+              // Limite générale standard
               ttl: configService.get<number>('app.rateLimitTtl', 60),
               limit: configService.get<number>('app.rateLimitLimit', 100),
             },
+            {
+              // Limite plus stricte pour les routes d'authentification
+              name: 'auth',
+              ttl: configService.get<number>('app.authRateLimitTtl', 60 * 15), // 15 minutes
+              limit: configService.get<number>('app.authRateLimitLimit', 5),
+            },
+            {
+              // Limite pour les requêtes de l'API
+              name: 'api',
+              ttl: configService.get<number>('app.apiRateLimitTtl', 60),
+              limit: configService.get<number>('app.apiRateLimitLimit', 30),
+            },
           ],
+          skipIf: (request) => {
+            // Logique pour ignorer le rate limiting dans certains cas
+            // Par exemple, pour les IPs internes ou certains utilisateurs
+            return configService.get('app.nodeEnv') === 'development';
+          },
+          // Gestion personnalisée de l'identifiant de rate limiting
+          // Par défaut, utilise l'IP source, mais peut être étendu
+          generateKey: (context, name) => {
+            const request = context.switchToHttp().getRequest();
+            // Utiliser l'ID de l'utilisateur si authentifié, sinon l'IP
+            const identifier = request.user?.id ||
+              request.ip ||
+              request.headers['x-forwarded-for'] ||
+              'unknown';
+            return `${name}-${identifier}`;
+          },
         };
       },
     }),
@@ -48,7 +81,10 @@ import { PrismaModule } from './prisma/prisma.module';
     AuthModule,
     UsersModule,
     RolesModule,
-    PermissionsModule
+    PermissionsModule,
+    DocumentationModule,
+    HealthModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [
@@ -67,6 +103,11 @@ import { PrismaModule } from './prisma/prisma.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
+    },
+    // Intercepteur de sécurité
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: SecurityInterceptor,
     },
 
     // Guards globaux

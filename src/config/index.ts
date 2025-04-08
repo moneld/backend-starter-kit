@@ -18,11 +18,17 @@ export const ConfigModule = NestConfigModule.forRoot({
       .valid('development', 'production', 'test')
       .default('development'),
     PORT: Joi.number().default(3000),
+    HOST: Joi.string().default('0.0.0.0'),
     API_PREFIX: Joi.string().default('api'),
     API_VERSION: Joi.string().default('1'),
     APP_NAME: Joi.string().required(),
     APP_URL: Joi.string().required(),
     CORS_ORIGIN: Joi.string().default('*'),
+
+    // Sécurité
+    ENABLE_CSRF_PROTECTION: Joi.boolean().default(false),
+    ENABLE_SWAGGER: Joi.boolean().default(true),
+    ENABLE_STRICT_SECURITY: Joi.boolean().default(false),
 
     // Database
     DATABASE_URL: Joi.string().required(),
@@ -46,13 +52,27 @@ export const ConfigModule = NestConfigModule.forRoot({
     ARGON2_HASH_LENGTH: Joi.number().default(32),
     ARGON2_TIME_COST: Joi.number().default(3),
     ARGON2_PARALLELISM: Joi.number().default(1),
+    PASSWORD_MIN_LENGTH: Joi.number().default(8),
+    PASSWORD_MAX_LENGTH: Joi.number().default(100),
 
     // Rate limiting
     RATE_LIMIT_TTL: Joi.number().default(60),
     RATE_LIMIT_LIMIT: Joi.number().default(100),
+    AUTH_RATE_LIMIT_TTL: Joi.number().default(900),  // 15 minutes
+    AUTH_RATE_LIMIT_LIMIT: Joi.number().default(5),
+    API_RATE_LIMIT_TTL: Joi.number().default(60),
+    API_RATE_LIMIT_LIMIT: Joi.number().default(30),
 
     // 2FA
     TWO_FACTOR_AUTHENTICATION_APP_NAME: Joi.string().required(),
+
+    // Token expiration
+    VERIFICATION_TOKEN_EXPIRY_HOURS: Joi.number().default(24),
+    RESET_TOKEN_EXPIRY_MINUTES: Joi.number().default(60),
+
+    // Account security
+    MAX_LOGIN_ATTEMPTS: Joi.number().default(5),
+    ACCOUNT_LOCK_DURATION_MINUTES: Joi.number().default(15),
 
     // Logging
     LOG_LEVEL: Joi.string()
@@ -60,6 +80,14 @@ export const ConfigModule = NestConfigModule.forRoot({
       .default('info'),
     LOG_TO_FILE: Joi.boolean().default(false),
     LOG_FILE_PATH: Joi.string().default('logs/app.log'),
+
+    // I18n
+    DEFAULT_LANGUAGE: Joi.string().default('fr'),
+    SUPPORTED_LANGUAGES: Joi.string().default('fr,en'),
+
+    // Pagination
+    DEFAULT_PAGE_SIZE: Joi.number().default(10),
+    MAX_PAGE_SIZE: Joi.number().default(100),
   }),
   validationOptions: {
     abortEarly: true,

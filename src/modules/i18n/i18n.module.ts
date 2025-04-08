@@ -16,13 +16,25 @@ import { I18nUtilsService } from './services/i18n-utils.service';
 @Module({
     imports: [
         NestI18nModule.forRootAsync({
-            useFactory: (configService: ConfigService) => ({
-                fallbackLanguage: configService.get('app.defaultLanguage', 'fr'),
-                loaderOptions: {
-                    path: path.join(__dirname, '../../i18n'),
-                    watch: configService.get('app.nodeEnv') === 'development',
-                },
-            }),
+            useFactory: (configService: ConfigService) => {
+                // Détermine si on est en mode production ou développement
+                const isProduction = configService.get('app.nodeEnv') === 'production';
+
+                // Chemin vers les fichiers de traduction
+                // En prod: cherche dans dist/i18n
+                // En dev: cherche dans src/i18n
+                const i18nPath = isProduction
+                    ? path.join(process.cwd(), 'dist/i18n')
+                    : path.join(process.cwd(), 'src/i18n');
+
+                return {
+                    fallbackLanguage: configService.get('app.defaultLanguage', 'fr'),
+                    loaderOptions: {
+                        path: i18nPath,
+                        watch: configService.get('app.nodeEnv') === 'development',
+                    },
+                };
+            },
             loader: I18nJsonLoader,
             resolvers: [
                 { use: QueryResolver, options: ['lang', 'locale', 'l'] },

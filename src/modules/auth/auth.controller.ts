@@ -34,6 +34,7 @@ import {
 import { VerifyEmailDto } from './dto/verify-email.dto';
 
 import { User } from '@prisma/client';
+import { AuthThrottlerGuard } from './guards/auth-throttler.guard';
 import { Tokens } from './interfaces/tokens.interface';
 
 @ApiTags('auth')
@@ -41,10 +42,11 @@ import { Tokens } from './interfaces/tokens.interface';
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Public()
   @Post('register')
+  @UseGuards(AuthThrottlerGuard)
   @ApiOperation({ summary: 'Enregistrer un nouvel utilisateur' })
   @ApiResponse({ status: 201, description: 'Utilisateur créé avec succès' })
   @ApiResponse({ status: 400, description: 'Données invalides' })
@@ -70,7 +72,7 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(LocalAuthGuard, AuthThrottlerGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Connecter un utilisateur' })
   @ApiResponse({ status: 200, description: 'Authentification réussie' })
@@ -290,6 +292,7 @@ export class AuthController {
 
   @Public()
   @Post('reset-password-request')
+  @UseGuards(AuthThrottlerGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Demander la réinitialisation du mot de passe' })
   @ApiResponse({ status: 200, description: 'Email de réinitialisation envoyé' })
