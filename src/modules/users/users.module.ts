@@ -10,11 +10,8 @@ import { InitializationService } from './initialization.service';
     PrismaModule,
     forwardRef(() => AuthModule), // Utilisation de forwardRef pour éviter les dépendances circulaires
   ],
-  providers: [
-    UsersService,
-    InitializationService,
-  ],
+  providers: [UsersService, InitializationService],
   controllers: [UsersController],
   exports: [UsersService],
 })
-export class UsersModule { }
+export class UsersModule {}

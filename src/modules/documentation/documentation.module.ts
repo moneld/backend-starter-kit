@@ -4,6 +4,6 @@ import { DocumentationService } from './documentation.service';
 
 @Module({
   controllers: [DocumentationController],
-  providers: [DocumentationService]
+  providers: [DocumentationService],
 })
 export class DocumentationModule {}

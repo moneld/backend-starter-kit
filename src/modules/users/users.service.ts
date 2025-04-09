@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -9,7 +14,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async findOne(id: string): Promise<User | null> {
     return this.prisma.user.findUnique({
@@ -37,9 +42,15 @@ export class UsersService {
     });
   }
 
-  async create(createUserDto: CreateUserDto | Prisma.UserCreateInput): Promise<User> {
+  async create(
+    createUserDto: CreateUserDto | Prisma.UserCreateInput,
+  ): Promise<User> {
     // Si c'est un DTO avec des roleIds
-    if ('roleIds' in createUserDto && Array.isArray(createUserDto.roleIds) && createUserDto.roleIds.length > 0) {
+    if (
+      'roleIds' in createUserDto &&
+      Array.isArray(createUserDto.roleIds) &&
+      createUserDto.roleIds.length > 0
+    ) {
       const { roleIds, ...userData } = createUserDto;
 
       return this.prisma.user.create({
@@ -76,7 +87,10 @@ export class UsersService {
     });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto | Prisma.UserUpdateInput): Promise<User> {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto | Prisma.UserUpdateInput,
+  ): Promise<User> {
     const user = await this.findOne(id);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -149,7 +163,9 @@ export class UsersService {
     });
   }
 
-  async findAll(queryDto: QueryUserDto): Promise<{ users: User[]; total: number; }> {
+  async findAll(
+    queryDto: QueryUserDto,
+  ): Promise<{ users: User[]; total: number }> {
     const {
       page = 1,
       limit = 10,
@@ -254,14 +270,20 @@ export class UsersService {
     });
   }
 
-  async updateRefreshToken(userId: string, refreshToken: string | null): Promise<void> {
+  async updateRefreshToken(
+    userId: string,
+    refreshToken: string | null,
+  ): Promise<void> {
     await this.prisma.user.update({
       where: { id: userId },
       data: { refreshToken },
     });
   }
 
-  async getUserIfRefreshTokenMatches(userId: string, refreshToken: string): Promise<User | null> {
+  async getUserIfRefreshTokenMatches(
+    userId: string,
+    refreshToken: string,
+  ): Promise<User | null> {
     const user = await this.findOne(userId);
 
     if (!user || !user.refreshToken) {
@@ -284,7 +306,10 @@ export class UsersService {
     });
   }
 
-  async enableTwoFactorAuth(userId: string, recoveryCodes: string[]): Promise<User> {
+  async enableTwoFactorAuth(
+    userId: string,
+    recoveryCodes: string[],
+  ): Promise<User> {
     return this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -314,7 +339,11 @@ export class UsersService {
     });
   }
 
-  async setVerificationToken(email: string, token: string, expiresIn: number): Promise<User> {
+  async setVerificationToken(
+    email: string,
+    token: string,
+    expiresIn: number,
+  ): Promise<User> {
     const expirationDate = new Date();
     expirationDate.setSeconds(expirationDate.getSeconds() + expiresIn);
 
@@ -351,7 +380,11 @@ export class UsersService {
     });
   }
 
-  async setResetPasswordToken(email: string, token: string, expiresIn: number): Promise<User> {
+  async setResetPasswordToken(
+    email: string,
+    token: string,
+    expiresIn: number,
+  ): Promise<User> {
     const expirationDate = new Date();
     expirationDate.setSeconds(expirationDate.getSeconds() + expiresIn);
 
@@ -428,7 +461,9 @@ export class UsersService {
     // Retourner l'utilisateur mis à jour
     const updatedUser = await this.findOne(userId);
     if (!updatedUser) {
-      throw new NotFoundException(`User with ID ${userId} not found after update`);
+      throw new NotFoundException(
+        `User with ID ${userId} not found after update`,
+      );
     }
     return updatedUser;
   }
@@ -449,21 +484,27 @@ export class UsersService {
     }
 
     // Supprimer le rôle de l'utilisateur
-    await this.prisma.userRole.delete({
-      where: {
-        userId_roleId: {
-          userId,
-          roleId,
+    await this.prisma.userRole
+      .delete({
+        where: {
+          userId_roleId: {
+            userId,
+            roleId,
+          },
         },
-      },
-    }).catch(() => {
-      throw new BadRequestException(`User does not have the role ${role.name}`);
-    });
+      })
+      .catch(() => {
+        throw new BadRequestException(
+          `User does not have the role ${role.name}`,
+        );
+      });
 
     // Retourner l'utilisateur mis à jour
     const updatedUser = await this.findOne(userId);
     if (!updatedUser) {
-      throw new NotFoundException(`User with ID ${userId} not found after update`);
+      throw new NotFoundException(
+        `User with ID ${userId} not found after update`,
+      );
     }
     return updatedUser;
   }

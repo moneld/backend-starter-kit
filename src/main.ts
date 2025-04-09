@@ -18,7 +18,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({
       logger: true,
-      trustProxy: true // Nécessaire si derrière un proxy/load balancer
+      trustProxy: true, // Nécessaire si derrière un proxy/load balancer
     }),
   );
 
@@ -54,7 +54,9 @@ async function bootstrap() {
       },
     },
     // Si vous avez besoin de Swagger UI en production
-    ...(configService.get('app.nodeEnv') === 'production' ? {} : { contentSecurityPolicy: false }),
+    ...(configService.get('app.nodeEnv') === 'production'
+      ? {}
+      : { contentSecurityPolicy: false }),
   });
 
   // Protection CSRF (Cross-Site Request Forgery)

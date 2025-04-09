@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { RolesModule } from '../roles/roles.module';
@@ -13,26 +12,19 @@ import { UsersAdminController } from './controllers/users-admin.controller';
 import { AdminGuard } from './guards/admin.guard';
 
 @Module({
-    imports: [
-        UsersModule,
-        RolesModule,
-        PermissionsModule,
-    ],
-    controllers: [
-        AdminController,
-        DashboardController,
-        UsersAdminController,
-        RolesAdminController,
-        SettingsAdminController,
-    ],
-    providers: [
-        AdminService,
-        AdminGuard,
-        AdminSeedService, // Ajout du service de seed
-    ],
-    exports: [
-        AdminService,
-        AdminGuard,
-    ],
+  imports: [UsersModule, RolesModule, PermissionsModule],
+  controllers: [
+    AdminController,
+    DashboardController,
+    UsersAdminController,
+    RolesAdminController,
+    SettingsAdminController,
+  ],
+  providers: [
+    AdminService,
+    AdminGuard,
+    AdminSeedService, // Ajout du service de seed
+  ],
+  exports: [AdminService, AdminGuard],
 })
-export class AdminModule { }
+export class AdminModule {}

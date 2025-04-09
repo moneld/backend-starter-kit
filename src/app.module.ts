@@ -2,23 +2,21 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { SecurityInterceptor } from './common/interceptors/security.interceptor';
-import { LoggerModule } from './common/logger/logger.module';
 import { ConfigModule } from './config';
+import { AdminModule } from './modules/admin/admin.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+import { DocumentationModule } from './modules/documentation/documentation.module';
+import { HealthModule } from './modules/health/health.module';
 import { I18nExceptionFilter } from './modules/i18n/filters/i18n-exception.filter';
 import { I18nModule } from './modules/i18n/i18n.module';
 import { PermissionsModule } from './modules/permissions/permissions.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { DocumentationModule } from './modules/documentation/documentation.module';
-import { HealthModule } from './modules/health/health.module';
-import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -27,9 +25,6 @@ import { AdminModule } from './modules/admin/admin.module';
 
     // Prisma Module
     PrismaModule,
-
-    // Logger Module
-    LoggerModule,
 
     I18nModule,
 
@@ -67,7 +62,8 @@ import { AdminModule } from './modules/admin/admin.module';
           generateKey: (context, name) => {
             const request = context.switchToHttp().getRequest();
             // Utiliser l'ID de l'utilisateur si authentifié, sinon l'IP
-            const identifier = request.user?.id ||
+            const identifier =
+              request.user?.id ||
               request.ip ||
               request.headers['x-forwarded-for'] ||
               'unknown';

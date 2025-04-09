@@ -42,7 +42,7 @@ import { Tokens } from './interfaces/tokens.interface';
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('register')

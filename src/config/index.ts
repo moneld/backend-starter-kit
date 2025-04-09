@@ -58,7 +58,7 @@ export const ConfigModule = NestConfigModule.forRoot({
     // Rate limiting
     RATE_LIMIT_TTL: Joi.number().default(60),
     RATE_LIMIT_LIMIT: Joi.number().default(100),
-    AUTH_RATE_LIMIT_TTL: Joi.number().default(900),  // 15 minutes
+    AUTH_RATE_LIMIT_TTL: Joi.number().default(900), // 15 minutes
     AUTH_RATE_LIMIT_LIMIT: Joi.number().default(5),
     API_RATE_LIMIT_TTL: Joi.number().default(60),
     API_RATE_LIMIT_LIMIT: Joi.number().default(30),

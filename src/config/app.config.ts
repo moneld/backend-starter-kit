@@ -41,12 +41,21 @@ export const appConfig = registerAs('app', () => ({
   passwordMaxLength: parseInt(process.env.PASSWORD_MAX_LENGTH || '100', 10),
 
   // Expiration des tokens
-  verificationTokenExpiryHours: parseInt(process.env.VERIFICATION_TOKEN_EXPIRY_HOURS || '24', 10),
-  resetTokenExpiryMinutes: parseInt(process.env.RESET_TOKEN_EXPIRY_MINUTES || '60', 10),
+  verificationTokenExpiryHours: parseInt(
+    process.env.VERIFICATION_TOKEN_EXPIRY_HOURS || '24',
+    10,
+  ),
+  resetTokenExpiryMinutes: parseInt(
+    process.env.RESET_TOKEN_EXPIRY_MINUTES || '60',
+    10,
+  ),
 
   // Verrouillage de compte
   maxLoginAttempts: parseInt(process.env.MAX_LOGIN_ATTEMPTS || '5', 10),
-  accountLockDurationMinutes: parseInt(process.env.ACCOUNT_LOCK_DURATION_MINUTES || '15', 10),
+  accountLockDurationMinutes: parseInt(
+    process.env.ACCOUNT_LOCK_DURATION_MINUTES || '15',
+    10,
+  ),
 
   // Autres configurations
   defaultPageSize: parseInt(process.env.DEFAULT_PAGE_SIZE || '10', 10),

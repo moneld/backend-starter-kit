@@ -39,4 +39,4 @@ import { LocalStrategy } from './strategies/local.strategy';
   controllers: [AuthController],
   exports: [AuthService, HashService, TwoFactorAuthService],
 })
-export class AuthModule { }
+export class AuthModule {}
