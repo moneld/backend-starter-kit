@@ -20,8 +20,8 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { CreatePermissionDto, PermissionResponseDto, PermissionWithRolesDto, RoleMinimalDto, UpdatePermissionDto } from './dto/permission.dto';
 import { PermissionsService } from './permissions.service';
 
-@ApiTags('permission-management')
-@Controller({ path: 'permission-management', version: '1' })
+@ApiTags('permission')
+@Controller({ path: 'permission', version: '1' })
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('admin')
 @ApiBearerAuth()

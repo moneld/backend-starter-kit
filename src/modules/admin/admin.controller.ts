@@ -1,9 +1,9 @@
 // src/modules/admin/admin.controller.ts
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { AdminGuard } from './guards/admin.guard';
 import { AdminService } from './admin.service';
+import { AdminGuard } from './guards/admin.guard';
 
 @ApiTags('Admin')
 @Controller({ path: 'admin', version: '1' })
@@ -38,14 +38,5 @@ export class AdminController {
     @ApiResponse({ status: 403, description: 'Accès non autorisé' })
     async getSystemStats() {
         return this.adminService.getSystemStats();
-    }
-
-    @Get('settings')
-    @ApiOperation({ summary: 'Obtenir les paramètres système' })
-    @ApiResponse({ status: 200, description: 'Paramètres récupérés avec succès' })
-    @ApiResponse({ status: 401, description: 'Non authentifié' })
-    @ApiResponse({ status: 403, description: 'Accès non autorisé' })
-    async getSystemSettings() {
-        return this.adminService.getSystemSettings();
     }
 }

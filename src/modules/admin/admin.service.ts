@@ -1,9 +1,20 @@
 // src/modules/admin/admin.service.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from '../users/users.service';
-import { RolesService } from '../roles/roles.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { RolesService } from '../roles/roles.service';
+import { UsersService } from '../users/users.service';
+
+// Interface definition moved before its usage
+export interface RecentActivity {
+    timestamp: string;
+    type: string;
+    description: string;
+    user?: {
+        id: string;
+        email: string;
+    };
+}
 
 @Injectable()
 export class AdminService {
@@ -17,8 +28,8 @@ export class AdminService {
     ) { }
 
     /**
-     * Obtenir un résumé des statistiques pour le tableau de bord admin
-     */
+    * Obtenir un résumé des statistiques pour le tableau de bord admin
+    */
     async getDashboardStats() {
         try {
             // Compteurs utilisateurs
@@ -49,8 +60,8 @@ export class AdminService {
                 take: 5,
             });
 
-            // Activité récente (à implémenter si vous avez une table d'activité/logs)
-            const recentActivity = [];
+            // Activité récente (placeholder - à implémenter si vous avez une table d'activité/logs)
+            const recentActivity: RecentActivity[] = [];
 
             return {
                 stats: {

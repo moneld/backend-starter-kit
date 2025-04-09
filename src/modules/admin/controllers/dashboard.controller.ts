@@ -1,9 +1,21 @@
 // src/modules/admin/controllers/dashboard.controller.ts
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { AdminService, RecentActivity } from '../admin.service';
 import { AdminGuard } from '../guards/admin.guard';
-import { AdminService } from '../admin.service';
+
+interface DashboardStats {
+    stats: {
+        totalUsers: number;
+        activeUsers: number;
+        verifiedUsers: number;
+        totalRoles: number;
+        totalPermissions: number;
+    };
+    recentUsers: any[]; // You might want to create a more specific type
+    recentActivity: RecentActivity[];
+}
 
 @ApiTags('Admin Dashboard')
 @Controller({ path: 'admin/dashboard', version: '1' })
@@ -17,7 +29,7 @@ export class DashboardController {
     @ApiResponse({ status: 200, description: 'Statistiques récupérées avec succès' })
     @ApiResponse({ status: 401, description: 'Non authentifié' })
     @ApiResponse({ status: 403, description: 'Accès non autorisé' })
-    async getDashboardStats() {
+    async getDashboardStats(): Promise<DashboardStats> {
         return this.adminService.getDashboardStats();
     }
 }
