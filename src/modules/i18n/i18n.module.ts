@@ -9,7 +9,6 @@ import {
   QueryResolver,
 } from 'nestjs-i18n';
 import * as path from 'path';
-import { I18nExceptionFilter } from './filters/i18n-exception.filter';
 import { I18nResponseInterceptor } from './interceptors/i18n-response.interceptor';
 import { I18nUtilsService } from './services/i18n-utils.service';
 
@@ -45,12 +44,11 @@ import { I18nUtilsService } from './services/i18n-utils.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [I18nUtilsService, I18nExceptionFilter, I18nResponseInterceptor],
+  providers: [I18nUtilsService, I18nResponseInterceptor],
   exports: [
     NestI18nModule,
     I18nUtilsService,
-    I18nExceptionFilter,
     I18nResponseInterceptor,
   ],
 })
-export class I18nModule {}
+export class I18nModule { }

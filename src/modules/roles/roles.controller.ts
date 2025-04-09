@@ -41,7 +41,7 @@ import { RolesService } from './roles.service';
 export class RolesController {
   private readonly logger = new Logger(RolesController.name);
 
-  constructor(private readonly rolesService: RolesService) {}
+  constructor(private readonly rolesService: RolesService) { }
 
   @Get()
   @ApiOperation({ summary: 'Récupérer tous les rôles' })

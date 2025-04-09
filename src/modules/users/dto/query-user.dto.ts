@@ -4,11 +4,10 @@ import {
   IsBoolean,
   IsEmail,
   IsEnum,
-  IsInt,
   IsOptional,
   IsString,
-  Min,
 } from 'class-validator';
+import { PaginationDto } from '../../../common/dto/pagination.dto';
 
 export enum UserSortField {
   ID = 'id',
@@ -19,32 +18,7 @@ export enum UserSortField {
   UPDATED_AT = 'updatedAt',
 }
 
-export class QueryUserDto {
-  @ApiProperty({
-    description: 'Page à récupérer (commence à 1)',
-    required: false,
-    default: 1,
-    minimum: 1,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt({ message: 'La page doit être un nombre entier' })
-  @Min(1, { message: 'La page doit être supérieure ou égale à 1' })
-  page?: number = 1;
-
-  @ApiProperty({
-    description: "Nombre d'éléments par page",
-    required: false,
-    default: 10,
-    minimum: 1,
-    maximum: 100,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt({ message: 'La limite doit être un nombre entier' })
-  @Min(1, { message: 'La limite doit être supérieure ou égale à 1' })
-  limit?: number = 10;
-
+export class QueryUserDto extends PaginationDto {
   @ApiProperty({
     description: 'Recherche par email',
     required: false,
@@ -75,7 +49,7 @@ export class QueryUserDto {
     enum: ['true', 'false'],
   })
   @IsOptional()
-  @IsString()
+  @Type(() => Boolean)
   @IsBoolean({ message: "Le statut d'activation doit être un booléen" })
   isActive?: boolean;
 
@@ -85,7 +59,7 @@ export class QueryUserDto {
     enum: ['true', 'false'],
   })
   @IsOptional()
-  @IsString()
+  @Type(() => Boolean)
   @IsBoolean({ message: 'Le statut de vérification doit être un booléen' })
   isVerified?: boolean;
 
@@ -98,18 +72,6 @@ export class QueryUserDto {
   @IsOptional()
   @IsEnum(UserSortField, { message: 'Champ de tri non valide' })
   sortBy?: UserSortField = UserSortField.CREATED_AT;
-
-  @ApiProperty({
-    description: 'Ordre de tri',
-    required: false,
-    default: 'desc',
-    enum: ['asc', 'desc'],
-  })
-  @IsOptional()
-  @IsEnum(['asc', 'desc'], {
-    message: 'L\'ordre de tri doit être "asc" ou "desc"',
-  })
-  sortOrder?: 'asc' | 'desc' = 'desc';
 
   @ApiProperty({
     description: 'Filtrer par rôle (ID du rôle)',

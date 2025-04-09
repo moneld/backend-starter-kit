@@ -2,16 +2,15 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { UnifiedExceptionFilter } from './common/filters/unified-exception.filter';
 import { SecurityInterceptor } from './common/interceptors/security.interceptor';
+import { UnifiedResponseInterceptor } from './common/interceptors/unified-response.interceptor';
 import { ConfigModule } from './config';
 import { AdminModule } from './modules/admin/admin.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { DocumentationModule } from './modules/documentation/documentation.module';
 import { HealthModule } from './modules/health/health.module';
-import { I18nExceptionFilter } from './modules/i18n/filters/i18n-exception.filter';
 import { I18nModule } from './modules/i18n/i18n.module';
 import { PermissionsModule } from './modules/permissions/permissions.module';
 import { RolesModule } from './modules/roles/roles.module';
@@ -87,18 +86,18 @@ import { PrismaModule } from './prisma/prisma.module';
     // Filtres d'exception globaux - utiliser le filtre I18n au lieu du filtre par défaut
     {
       provide: APP_FILTER,
-      useClass: I18nExceptionFilter,
+      useClass: UnifiedExceptionFilter,
     },
     // Filtres d'exception globaux
-    {
-      provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
-    },
+    /*   {
+        provide: APP_FILTER,
+        useClass: HttpExceptionFilter,
+      }, */
 
     // Intercepteurs globaux
     {
       provide: APP_INTERCEPTOR,
-      useClass: ResponseInterceptor,
+      useClass: UnifiedResponseInterceptor,
     },
     // Intercepteur de sécurité
     {

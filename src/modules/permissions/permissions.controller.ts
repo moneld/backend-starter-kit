@@ -41,7 +41,7 @@ import { PermissionsService } from './permissions.service';
 export class PermissionsController {
   private readonly logger = new Logger(PermissionsController.name);
 
-  constructor(private readonly permissionsService: PermissionsService) {}
+  constructor(private readonly permissionsService: PermissionsService) { }
 
   @Get()
   @ApiOperation({ summary: 'Récupérer toutes les permissions' })
