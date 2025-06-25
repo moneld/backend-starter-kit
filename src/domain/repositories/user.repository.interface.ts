@@ -1,7 +1,13 @@
+import { UserRole } from 'generated/prisma';
 import { User } from '../entities/user.entity';
 
 export interface IUserRepository {
-  create(email: string, name: string, hashedPassword: string): Promise<User>;
+  create(
+    email: string,
+    name: string,
+    hashedPassword: string,
+    role?: UserRole,
+  ): Promise<User>;
 
   findById(id: string): Promise<User | null>;
 

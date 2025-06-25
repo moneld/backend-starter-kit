@@ -1,9 +1,12 @@
+import { UserRole } from 'generated/prisma';
+
 export class User {
   constructor(
     private readonly _id: string,
     private readonly _email: string,
     private readonly _name: string,
     private readonly _password: string,
+    private readonly _role: UserRole,
     private readonly _createdAt: Date,
     private readonly _updatedAt: Date,
   ) {}
@@ -24,11 +27,19 @@ export class User {
     return this._password;
   }
 
+  get role(): UserRole {
+    return this._role;
+  }
+
   get createdAt(): Date {
     return this._createdAt;
   }
 
   get updatedAt(): Date {
     return this._updatedAt;
+  }
+
+  isAdmin(): boolean {
+    return this._role === UserRole.ADMIN;
   }
 }
