@@ -1,0 +1,34 @@
+export class User {
+  constructor(
+    private readonly _id: string,
+    private readonly _email: string,
+    private readonly _name: string,
+    private readonly _password: string,
+    private readonly _createdAt: Date,
+    private readonly _updatedAt: Date,
+  ) {}
+
+  get id(): string {
+    return this._id;
+  }
+
+  get email(): string {
+    return this._email;
+  }
+
+  get name(): string {
+    return this._name;
+  }
+
+  get password(): string {
+    return this._password;
+  }
+
+  get createdAt(): Date {
+    return this._createdAt;
+  }
+
+  get updatedAt(): Date {
+    return this._updatedAt;
+  }
+}
