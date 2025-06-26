@@ -84,6 +84,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       InvalidCredentialsException: HttpStatus.UNAUTHORIZED,
       InvalidTokenException: HttpStatus.UNAUTHORIZED,
       InvalidPasswordException: HttpStatus.BAD_REQUEST,
+      EmailNotVerifiedException: HttpStatus.FORBIDDEN,
+      InvalidVerificationTokenException: HttpStatus.BAD_REQUEST,
     };
 
     return mapping[exception.constructor.name] || HttpStatus.BAD_REQUEST;

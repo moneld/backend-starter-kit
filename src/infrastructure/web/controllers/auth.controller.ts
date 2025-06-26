@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  Query,
 } from '@nestjs/common';
 import { RegisterDto } from '@application/dto/auth/register.dto';
 import { LoginDto } from '@application/dto/auth/login.dto';
@@ -16,6 +17,8 @@ import { LoginUseCase } from '@application/use-cases/auth/login.use-case';
 import { GetProfileUseCase } from '@application/use-cases/auth/get-profile.use-case';
 import { RefreshTokenUseCase } from '@application/use-cases/auth/refresh-token.use-case';
 import { LogoutUseCase } from '@application/use-cases/auth/logout.use-case';
+import { SendVerificationEmailUseCase } from '@application/use-cases/auth/send-verification-email.use-case';
+import { VerifyEmailUseCase } from '@application/use-cases/auth/verify-email.use-case';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
@@ -31,6 +34,8 @@ export class AuthController {
     private readonly getProfileUseCase: GetProfileUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly logoutUseCase: LogoutUseCase,
+    private readonly sendVerificationEmailUseCase: SendVerificationEmailUseCase,
+    private readonly verifyEmailUseCase: VerifyEmailUseCase,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @Inject('IRefreshTokenRepository')
@@ -38,7 +43,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 requests per minute
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   async register(@Body() registerDto: RegisterDto) {
     const user = await this.registerUseCase.execute(
       registerDto.email,
@@ -46,17 +51,22 @@ export class AuthController {
       registerDto.password,
     );
 
+    // Send verification email
+    await this.sendVerificationEmailUseCase.execute(user.id);
+
     const tokens = await this.generateTokens(user);
 
     return {
       ...tokens,
       user,
+      message:
+        'Registration successful. Please check your email to verify your account.',
     };
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ default: { limit: 3, ttl: 60000 } }) // 5 requests per minute
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   async login(@Body() loginDto: LoginDto) {
     const user = await this.loginUseCase.execute(
       loginDto.email,
@@ -68,6 +78,26 @@ export class AuthController {
     return {
       ...tokens,
       user,
+    };
+  }
+
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    await this.verifyEmailUseCase.execute(token);
+
+    return {
+      message: 'Email verified successfully. You can now login.',
+    };
+  }
+
+  @Post('resend-verification')
+  @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 1, ttl: 300000 } })
+  async resendVerification(@CurrentUser() user: CurrentUser) {
+    await this.sendVerificationEmailUseCase.execute(user.userId);
+
+    return {
+      message: 'Verification email sent successfully.',
     };
   }
 

@@ -8,12 +8,14 @@ import { UsersModule } from '@modules/users/users.module';
 import { AdminModule } from '@modules/admin/admin.module';
 import jwtConfig from '@infrastructure/config/jwt.config';
 import securityConfig from '@infrastructure/config/security.config';
+import emailConfig from '@infrastructure/config/email.config';
+import { TasksModule } from '@modules/tasks/tasks.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [jwtConfig, securityConfig],
+      load: [jwtConfig, securityConfig, emailConfig],
     }),
     ThrottlerModule.forRoot([
       {
@@ -25,6 +27,7 @@ import securityConfig from '@infrastructure/config/security.config';
     AuthModule,
     UsersModule,
     AdminModule,
+    TasksModule,
   ],
   providers: [
     {

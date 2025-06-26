@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { IUserRepository } from '@domain/repositories/user.repository.interface';
-import { InvalidCredentialsException } from '@domain/exceptions/domain.exception';
+import {
+  InvalidCredentialsException,
+  EmailNotVerifiedException,
+} from '@domain/exceptions/domain.exception';
 import { IHashingService } from '@domain/services/hashing.service.interface';
 
 @Injectable()
@@ -22,6 +25,11 @@ export class LoginUseCase {
     );
     if (!isPasswordValid) {
       throw new InvalidCredentialsException();
+    }
+
+    // Check email verification
+    if (!user.isEmailVerified) {
+      throw new EmailNotVerifiedException();
     }
 
     return {

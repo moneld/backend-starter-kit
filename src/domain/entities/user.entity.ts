@@ -7,6 +7,7 @@ export class User {
     private readonly _name: string,
     private readonly _password: string,
     private readonly _role: UserRole,
+    private readonly _isEmailVerified: boolean,
     private readonly _createdAt: Date,
     private readonly _updatedAt: Date,
   ) {}
@@ -39,7 +40,15 @@ export class User {
     return this._updatedAt;
   }
 
+  get isEmailVerified(): boolean {
+    return this._isEmailVerified;
+  }
+
   isAdmin(): boolean {
     return this._role === UserRole.ADMIN;
+  }
+
+  canLogin(): boolean {
+    return this._isEmailVerified;
   }
 }

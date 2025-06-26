@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { IRefreshTokenRepository } from '@domain/repositories/refresh-token.repository.interface';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
@@ -7,6 +7,7 @@ export class CleanupExpiredTokensTask {
   private readonly logger = new Logger(CleanupExpiredTokensTask.name);
 
   constructor(
+    @Inject('IRefreshTokenRepository')
     private readonly refreshTokenRepository: IRefreshTokenRepository,
   ) {}
 

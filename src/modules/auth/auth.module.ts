@@ -13,6 +13,12 @@ import { RefreshTokenRepository } from '@infrastructure/persistence/repositories
 import { Argon2HashingService } from '@infrastructure/security/argon2-hashing.service';
 import { PrismaModule } from '@infrastructure/persistence/prisma/prisma.module';
 import { RegisterUseCase } from '@application/use-cases/auth/register.use-case';
+import { ScheduleModule } from '@nestjs/schedule';
+import { VerificationTokenRepository } from '@infrastructure/persistence/repositories/verification-token.repository';
+import { EmailService } from '@infrastructure/email/email.service';
+import { CleanupVerificationTokensTask } from '@infrastructure/tasks/cleanup-verification-tokens.task';
+import { SendVerificationEmailUseCase } from '@application/use-cases/auth/send-verification-email.use-case';
+import { VerifyEmailUseCase } from '@application/use-cases/auth/verify-email.use-case';
 
 @Module({
   imports: [
@@ -30,6 +36,7 @@ import { RegisterUseCase } from '@application/use-cases/auth/register.use-case';
       }),
       inject: [ConfigService],
     }),
+    ScheduleModule.forRoot(),
   ],
   controllers: [AuthController],
   providers: [
@@ -46,11 +53,23 @@ import { RegisterUseCase } from '@application/use-cases/auth/register.use-case';
       useClass: RefreshTokenRepository,
     },
 
+    {
+      provide: 'IVerificationTokenRepository',
+      useClass: VerificationTokenRepository,
+    },
+
     // Services
     {
       provide: 'IHashingService',
       useClass: Argon2HashingService,
     },
+
+    {
+      provide: 'IEmailService',
+      useClass: EmailService,
+    },
+
+    CleanupVerificationTokensTask,
 
     // Use Cases
     {
@@ -109,7 +128,50 @@ import { RegisterUseCase } from '@application/use-cases/auth/register.use-case';
       },
       inject: ['IRefreshTokenRepository'],
     },
+    {
+      provide: SendVerificationEmailUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        verificationTokenRepository: VerificationTokenRepository,
+        emailService: EmailService,
+      ) => {
+        return new SendVerificationEmailUseCase(
+          userRepository,
+          verificationTokenRepository,
+          emailService,
+        );
+      },
+      inject: [
+        'IUserRepository',
+        'IVerificationTokenRepository',
+        'IEmailService',
+      ],
+    },
+    {
+      provide: VerifyEmailUseCase,
+      useFactory: (
+        verificationTokenRepository: VerificationTokenRepository,
+        userRepository: UserRepository,
+        emailService: EmailService,
+      ) => {
+        return new VerifyEmailUseCase(
+          verificationTokenRepository,
+          userRepository,
+          emailService,
+        );
+      },
+      inject: [
+        'IVerificationTokenRepository',
+        'IUserRepository',
+        'IEmailService',
+      ],
+    },
   ],
-  exports: [JwtModule, 'IUserRepository', 'IRefreshTokenRepository'],
+  exports: [
+    JwtModule,
+    'IUserRepository',
+    'IRefreshTokenRepository',
+    'IVerificationTokenRepository',
+  ],
 })
 export class AuthModule {}

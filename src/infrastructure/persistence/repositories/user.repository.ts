@@ -47,10 +47,12 @@ export class UserRepository implements IUserRepository {
     data: Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>,
   ): Promise<User> {
     const updateData: any = {};
-    if (data.email) updateData.email = data.email;
-    if (data.name) updateData.name = data.name;
-    if (data.password) updateData.password = data.password;
-    if (data.role) updateData.role = data.role;
+    if (data.email !== undefined) updateData.email = data.email;
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.password !== undefined) updateData.password = data.password;
+    if (data.role !== undefined) updateData.role = data.role;
+    if (data.isEmailVerified !== undefined)
+      updateData.isEmailVerified = data.isEmailVerified;
 
     const userRecord = await this.prisma.user.update({
       where: { id },
@@ -60,6 +62,7 @@ export class UserRepository implements IUserRepository {
     return this.mapToEntity(userRecord);
   }
 
+  // Ajout de la méthode delete manquante
   async delete(id: string): Promise<void> {
     await this.prisma.user.delete({
       where: { id },
@@ -73,6 +76,7 @@ export class UserRepository implements IUserRepository {
       userRecord.name,
       userRecord.password,
       userRecord.role,
+      userRecord.isEmailVerified,
       userRecord.createdAt,
       userRecord.updatedAt,
     );
