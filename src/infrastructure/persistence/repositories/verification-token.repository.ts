@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { IVerificationTokenRepository } from '@domain/repositories/verification-token.repository.interface';
 import {
-  VerificationToken,
   TokenType,
+  VerificationToken,
 } from '@domain/entities/verification-token.entity';
 import { TokenType as PrismaTokenType } from 'generated/prisma';
 

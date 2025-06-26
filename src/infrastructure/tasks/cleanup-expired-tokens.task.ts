@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IRefreshTokenRepository } from '@domain/repositories/refresh-token.repository.interface';
 import { Cron, CronExpression } from '@nestjs/schedule';
 

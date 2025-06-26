@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import * as handlebars from 'handlebars';
 import {
-  IEmailService,
   EmailData,
+  IEmailService,
 } from '@domain/services/email.service.interface';
 
 @Injectable()

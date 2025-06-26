@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { IUserRepository } from '@domain/repositories/user.repository.interface';
 import {
-  InvalidCredentialsException,
   EmailNotVerifiedException,
+  InvalidCredentialsException,
 } from '@domain/exceptions/domain.exception';
 import { IHashingService } from '@domain/services/hashing.service.interface';
 

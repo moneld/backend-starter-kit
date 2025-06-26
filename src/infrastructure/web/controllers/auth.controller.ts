@@ -1,13 +1,13 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
   Get,
-  UseGuards,
   HttpCode,
   HttpStatus,
   Inject,
+  Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { RegisterDto } from '@application/dto/auth/register.dto';
 import { LoginDto } from '@application/dto/auth/login.dto';
@@ -26,6 +26,13 @@ import { CurrentUser } from '../decorators/current-user.decorator';
 import { IRefreshTokenRepository } from '@domain/repositories/refresh-token.repository.interface';
 import { Throttle } from '@nestjs/throttler';
 
+import { ForgotPasswordDto } from '@application/dto/auth/forgot-password.dto';
+import { ResetPasswordDto } from '@application/dto/auth/reset-password.dto';
+import { ChangePasswordDto } from '@application/dto/auth/change-password.dto';
+import { ForgotPasswordUseCase } from '@application/use-cases/auth/forgot-password.use-case';
+import { ResetPasswordUseCase } from '@application/use-cases/auth/reset-password.use-case';
+import { ChangePasswordUseCase } from '@application/use-cases/auth/change-password.use-case';
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -40,6 +47,9 @@ export class AuthController {
     private readonly configService: ConfigService,
     @Inject('IRefreshTokenRepository')
     private readonly refreshTokenRepository: IRefreshTokenRepository,
+    private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly changePasswordUseCase: ChangePasswordUseCase,
   ) {}
 
   @Post('register')
@@ -129,6 +139,52 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async getProfile(@CurrentUser() user: CurrentUser) {
     return await this.getProfileUseCase.execute(user.userId);
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 requests per hour
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    await this.forgotPasswordUseCase.execute(forgotPasswordDto.email);
+
+    // Always return success to prevent email enumeration
+    return {
+      message:
+        'If an account exists with this email, you will receive a password reset link.',
+    };
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 5, ttl: 3600000 } }) // 5 attempts per hour
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    await this.resetPasswordUseCase.execute(
+      resetPasswordDto.token,
+      resetPasswordDto.newPassword,
+    );
+
+    return {
+      message:
+        'Password has been reset successfully. Please login with your new password.',
+    };
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @CurrentUser() user: CurrentUser,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    await this.changePasswordUseCase.execute(
+      user.userId,
+      changePasswordDto.currentPassword,
+      changePasswordDto.newPassword,
+    );
+
+    return {
+      message: 'Password changed successfully. Please login again.',
+    };
   }
 
   private async generateTokens(user: any) {

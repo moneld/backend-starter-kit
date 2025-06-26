@@ -1,6 +1,6 @@
 import {
-  VerificationToken,
   TokenType,
+  VerificationToken,
 } from '../entities/verification-token.entity';
 
 export interface IVerificationTokenRepository {

@@ -13,12 +13,14 @@ import { RefreshTokenRepository } from '@infrastructure/persistence/repositories
 import { Argon2HashingService } from '@infrastructure/security/argon2-hashing.service';
 import { PrismaModule } from '@infrastructure/persistence/prisma/prisma.module';
 import { RegisterUseCase } from '@application/use-cases/auth/register.use-case';
-import { ScheduleModule } from '@nestjs/schedule';
-import { VerificationTokenRepository } from '@infrastructure/persistence/repositories/verification-token.repository';
-import { EmailService } from '@infrastructure/email/email.service';
-import { CleanupVerificationTokensTask } from '@infrastructure/tasks/cleanup-verification-tokens.task';
 import { SendVerificationEmailUseCase } from '@application/use-cases/auth/send-verification-email.use-case';
 import { VerifyEmailUseCase } from '@application/use-cases/auth/verify-email.use-case';
+import { VerificationTokenRepository } from '@infrastructure/persistence/repositories/verification-token.repository';
+import { EmailService } from '@infrastructure/email/email.service';
+import { ForgotPasswordUseCase } from '@application/use-cases/auth/forgot-password.use-case';
+import { ResetPasswordUseCase } from '@application/use-cases/auth/reset-password.use-case';
+import { ChangePasswordUseCase } from '@application/use-cases/auth/change-password.use-case';
+import { PasswordResetService } from '@infrastructure/services/password-reset.service';
 
 @Module({
   imports: [
@@ -36,7 +38,6 @@ import { VerifyEmailUseCase } from '@application/use-cases/auth/verify-email.use
       }),
       inject: [ConfigService],
     }),
-    ScheduleModule.forRoot(),
   ],
   controllers: [AuthController],
   providers: [
@@ -52,7 +53,6 @@ import { VerifyEmailUseCase } from '@application/use-cases/auth/verify-email.use
       provide: 'IRefreshTokenRepository',
       useClass: RefreshTokenRepository,
     },
-
     {
       provide: 'IVerificationTokenRepository',
       useClass: VerificationTokenRepository,
@@ -63,13 +63,19 @@ import { VerifyEmailUseCase } from '@application/use-cases/auth/verify-email.use
       provide: 'IHashingService',
       useClass: Argon2HashingService,
     },
-
     {
       provide: 'IEmailService',
       useClass: EmailService,
     },
-
-    CleanupVerificationTokensTask,
+    {
+      provide: 'IPasswordResetService',
+      useFactory: (
+        verificationTokenRepository: VerificationTokenRepository,
+      ) => {
+        return new PasswordResetService(verificationTokenRepository);
+      },
+      inject: ['IVerificationTokenRepository'],
+    },
 
     // Use Cases
     {
@@ -166,12 +172,69 @@ import { VerifyEmailUseCase } from '@application/use-cases/auth/verify-email.use
         'IEmailService',
       ],
     },
+    {
+      provide: ForgotPasswordUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        verificationTokenRepository: VerificationTokenRepository,
+        emailService: EmailService,
+      ) => {
+        return new ForgotPasswordUseCase(
+          userRepository,
+          verificationTokenRepository,
+          emailService,
+        );
+      },
+      inject: [
+        'IUserRepository',
+        'IVerificationTokenRepository',
+        'IEmailService',
+      ],
+    },
+    {
+      provide: ResetPasswordUseCase,
+      useFactory: (
+        verificationTokenRepository: VerificationTokenRepository,
+        userRepository: UserRepository,
+        refreshTokenRepository: RefreshTokenRepository,
+        hashingService: Argon2HashingService,
+      ) => {
+        return new ResetPasswordUseCase(
+          verificationTokenRepository,
+          userRepository,
+          refreshTokenRepository,
+          hashingService,
+        );
+      },
+      inject: [
+        'IVerificationTokenRepository',
+        'IUserRepository',
+        'IRefreshTokenRepository',
+        'IHashingService',
+      ],
+    },
+    {
+      provide: ChangePasswordUseCase,
+      useFactory: (
+        userRepository: UserRepository,
+        refreshTokenRepository: RefreshTokenRepository,
+        hashingService: Argon2HashingService,
+      ) => {
+        return new ChangePasswordUseCase(
+          userRepository,
+          refreshTokenRepository,
+          hashingService,
+        );
+      },
+      inject: ['IUserRepository', 'IRefreshTokenRepository', 'IHashingService'],
+    },
   ],
   exports: [
     JwtModule,
     'IUserRepository',
     'IRefreshTokenRepository',
     'IVerificationTokenRepository',
+    'IPasswordResetService',
   ],
 })
 export class AuthModule {}
