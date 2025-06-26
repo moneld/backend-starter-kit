@@ -8,6 +8,10 @@ export class Password {
     this.value = password;
   }
 
+  getValue(): string {
+    return this.value;
+  }
+
   private validate(password: string): void {
     if (password.length < 8) {
       throw new InvalidPasswordException(
@@ -38,10 +42,6 @@ export class Password {
         'Password must contain at least one special character',
       );
     }
-  }
-
-  getValue(): string {
-    return this.value;
   }
 }
 

@@ -156,7 +156,7 @@ export class AuthController {
 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ default: { limit: 5, ttl: 3600000 } }) // 5 attempts per hour
+  @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 5 attempts per hour
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     await this.resetPasswordUseCase.execute(
       resetPasswordDto.token,
