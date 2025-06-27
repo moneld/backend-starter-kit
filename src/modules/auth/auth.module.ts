@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+// src/modules/auth/auth.module.ts
+import { forwardRef, Module } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -21,11 +22,13 @@ import { ForgotPasswordUseCase } from '@application/use-cases/auth/forgot-passwo
 import { ResetPasswordUseCase } from '@application/use-cases/auth/reset-password.use-case';
 import { ChangePasswordUseCase } from '@application/use-cases/auth/change-password.use-case';
 import { PasswordResetService } from '@infrastructure/services/password-reset.service';
+import { SecurityModule } from '@modules/security/security.module';
 
 @Module({
   imports: [
     PrismaModule,
     PassportModule,
+    forwardRef(() => SecurityModule), // Utiliser forwardRef pour éviter la dépendance circulaire
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -44,7 +47,7 @@ import { PasswordResetService } from '@infrastructure/services/password-reset.se
     // Guards and Strategies
     JwtStrategy,
 
-    // Repositories
+    // Repositories (seulement ceux qui ne sont pas déjà dans SecurityModule)
     {
       provide: 'IUserRepository',
       useClass: UserRepository,
@@ -93,10 +96,22 @@ import { PasswordResetService } from '@infrastructure/services/password-reset.se
       useFactory: (
         userRepository: UserRepository,
         hashingService: Argon2HashingService,
+        accountLockService: any,
+        securityMonitoringService: any,
       ) => {
-        return new LoginUseCase(userRepository, hashingService);
+        return new LoginUseCase(
+          userRepository,
+          hashingService,
+          accountLockService,
+          securityMonitoringService,
+        );
       },
-      inject: ['IUserRepository', 'IHashingService'],
+      inject: [
+        'IUserRepository',
+        'IHashingService',
+        'IAccountLockService',
+        'ISecurityMonitoringService',
+      ],
     },
     {
       provide: GetProfileUseCase,

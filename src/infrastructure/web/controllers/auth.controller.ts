@@ -1,12 +1,16 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Inject,
+  NotFoundException,
+  Param,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { RegisterDto } from '@application/dto/auth/register.dto';
@@ -33,6 +37,9 @@ import { ForgotPasswordUseCase } from '@application/use-cases/auth/forgot-passwo
 import { ResetPasswordUseCase } from '@application/use-cases/auth/reset-password.use-case';
 import { ChangePasswordUseCase } from '@application/use-cases/auth/change-password.use-case';
 
+import { FastifyRequest } from 'fastify';
+import { ISessionManagerService } from '@domain/services/session-manager.service.interface';
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -50,6 +57,8 @@ export class AuthController {
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
     private readonly changePasswordUseCase: ChangePasswordUseCase,
+    @Inject('ISessionManagerService')
+    private readonly sessionManagerService: ISessionManagerService,
   ) {}
 
   @Post('register')
@@ -77,10 +86,22 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 3, ttl: 60000 } })
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto, @Req() request: FastifyRequest) {
+    const ipAddress = request.ip || 'unknown';
+    const userAgent = request.headers['user-agent'] || 'unknown';
+
     const user = await this.loginUseCase.execute(
       loginDto.email,
       loginDto.password,
+      ipAddress,
+      userAgent,
+    );
+
+    // Create session
+    const sessionId = await this.sessionManagerService.createSession(
+      user.id,
+      ipAddress,
+      userAgent,
     );
 
     const tokens = await this.generateTokens(user);
@@ -88,6 +109,7 @@ export class AuthController {
     return {
       ...tokens,
       user,
+      sessionId,
     };
   }
 
@@ -185,6 +207,39 @@ export class AuthController {
     return {
       message: 'Password changed successfully. Please login again.',
     };
+  }
+
+  @Get('sessions')
+  @UseGuards(JwtAuthGuard)
+  async getActiveSessions(@CurrentUser() user: CurrentUser) {
+    return await this.sessionManagerService.getActiveSessions(user.userId);
+  }
+
+  @Delete('sessions/:sessionId')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async terminateSession(
+    @CurrentUser() user: CurrentUser,
+    @Param('sessionId') sessionId: string,
+  ) {
+    const sessions = await this.sessionManagerService.getActiveSessions(
+      user.userId,
+    );
+    const session = sessions.find((s) => s.id === sessionId);
+
+    if (!session) {
+      throw new NotFoundException('Session not found');
+    }
+
+    await this.sessionManagerService.terminateSession(sessionId);
+  }
+
+  @Post('logout-all-devices')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logoutAllDevices(@CurrentUser() user: CurrentUser) {
+    await this.sessionManagerService.terminateAllUserSessions(user.userId);
+    await this.refreshTokenRepository.revokeAllUserTokens(user.userId);
   }
 
   private async generateTokens(user: any) {

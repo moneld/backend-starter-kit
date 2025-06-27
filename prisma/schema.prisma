@@ -25,17 +25,21 @@ enum TokenType {
 }
 
 model User {
-  id              String   @id @default(uuid())
-  email           String   @unique
-  name            String
-  password        String
-  role            UserRole @default(USER)
-  isEmailVerified Boolean  @default(false) @map("is_email_verified")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  name                String
+  password            String
+  role                UserRole  @default(USER)
+  isEmailVerified     Boolean   @default(false) @map("is_email_verified")
+  failedLoginAttempts Int       @default(0) @map("failed_login_attempts")
+  lockedUntil         DateTime? @map("locked_until")
+  lastFailedAttempt   DateTime? @map("last_failed_attempt")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
 
   refreshTokens      RefreshToken[]
   verificationTokens VerificationToken[]
+  Session            Session[]
 
   @@map("users")
 }
@@ -67,4 +71,46 @@ model VerificationToken {
   @@index([userId])
   @@index([token])
   @@map("verification_tokens")
+}
+
+// Nouveau modèle pour les sessions actives
+model Session {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ipAddress    String   @map("ip_address")
+  userAgent    String   @map("user_agent")
+  lastActivity DateTime @default(now()) @map("last_activity")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+// Nouveau modèle pour les événements de sécurité
+model SecurityEvent {
+  id        String            @id @default(uuid())
+  type      SecurityEventType
+  userId    String?           @map("user_id")
+  ipAddress String?           @map("ip_address")
+  userAgent String?           @map("user_agent")
+  metadata  Json?
+  createdAt DateTime          @default(now()) @map("created_at")
+
+  @@index([type])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("security_events")
+}
+
+enum SecurityEventType {
+  LOGIN_SUCCESS
+  LOGIN_FAILED
+  ACCOUNT_LOCKED
+  ACCOUNT_UNLOCKED
+  PASSWORD_CHANGED
+  SUSPICIOUS_ACTIVITY
+  FORCED_LOGOUT
+  SESSION_CREATED
+  SESSION_EXPIRED
 }

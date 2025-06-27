@@ -1,3 +1,4 @@
+// src/app.module.ts (version sans guard custom global)
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -6,6 +7,7 @@ import { PrismaModule } from '@infrastructure/persistence/prisma/prisma.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { UsersModule } from '@modules/users/users.module';
 import { AdminModule } from '@modules/admin/admin.module';
+import { SecurityModule } from '@modules/security/security.module';
 import jwtConfig from '@infrastructure/config/jwt.config';
 import securityConfig from '@infrastructure/config/security.config';
 import emailConfig from '@infrastructure/config/email.config';
@@ -20,19 +22,20 @@ import { TasksModule } from '@modules/tasks/tasks.module';
     ThrottlerModule.forRoot([
       {
         ttl: 60000, // 1 minute
-        limit: 10, // 10 requests
+        limit: 100, // 100 requests par minute globalement
       },
     ]),
     PrismaModule,
     AuthModule,
     UsersModule,
     AdminModule,
+    SecurityModule,
     TasksModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      useClass: ThrottlerGuard, // Utiliser le guard standard
     },
   ],
 })

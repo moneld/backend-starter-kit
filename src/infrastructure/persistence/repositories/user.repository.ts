@@ -1,3 +1,4 @@
+
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { IUserRepository } from '@domain/repositories/user.repository.interface';
@@ -53,6 +54,12 @@ export class UserRepository implements IUserRepository {
     if (data.role !== undefined) updateData.role = data.role;
     if (data.isEmailVerified !== undefined)
       updateData.isEmailVerified = data.isEmailVerified;
+    if (data.failedLoginAttempts !== undefined)
+      updateData.failedLoginAttempts = data.failedLoginAttempts;
+    if (data.lockedUntil !== undefined)
+      updateData.lockedUntil = data.lockedUntil;
+    if (data.lastFailedAttempt !== undefined)
+      updateData.lastFailedAttempt = data.lastFailedAttempt;
 
     const userRecord = await this.prisma.user.update({
       where: { id },
@@ -62,7 +69,6 @@ export class UserRepository implements IUserRepository {
     return this.mapToEntity(userRecord);
   }
 
-  // Ajout de la méthode delete manquante
   async delete(id: string): Promise<void> {
     await this.prisma.user.delete({
       where: { id },
@@ -77,6 +83,9 @@ export class UserRepository implements IUserRepository {
       userRecord.password,
       userRecord.role,
       userRecord.isEmailVerified,
+      userRecord.failedLoginAttempts || 0,
+      userRecord.lockedUntil || null,
+      userRecord.lastFailedAttempt || null,
       userRecord.createdAt,
       userRecord.updatedAt,
     );
