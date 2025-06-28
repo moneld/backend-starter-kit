@@ -97,7 +97,7 @@ export class AuthController {
       userAgent,
     );
 
-    // Create session
+    // Créer la session
     const sessionId = await this.sessionManagerService.createSession(
       user.id,
       ipAddress,
@@ -109,7 +109,9 @@ export class AuthController {
     return {
       ...tokens,
       user,
-      sessionId,
+      sessionId, // Important : le client doit stocker ce sessionId
+      message:
+        'Login successful. Please include sessionId in x-session-id header for all requests.',
     };
   }
 
@@ -135,7 +137,10 @@ export class AuthController {
 
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+  async refreshToken(
+    @Body() refreshTokenDto: RefreshTokenDto,
+    @Req() request: FastifyRequest,
+  ) {
     const result = await this.refreshTokenUseCase.execute(
       refreshTokenDto.refreshToken,
     );
@@ -143,10 +148,39 @@ export class AuthController {
     const accessToken = this.generateAccessToken(result.user);
     const newRefreshToken = await this.generateRefreshToken(result.user);
 
+    // Optionnel : prolonger la session si un sessionId est fourni
+    const sessionId = request.headers['x-session-id'] as string;
+    if (sessionId) {
+      await this.sessionManagerService.validateSession(sessionId);
+    }
+
     return {
       accessToken,
       refreshToken: newRefreshToken,
       user: result.user,
+      sessionId, // Retourner le même sessionId
+    };
+  }
+
+  @Get('session/status')
+  @UseGuards(JwtAuthGuard)
+  async getSessionStatus(@CurrentUser() user: CurrentUser) {
+    if (!user.sessionId) {
+      return {
+        active: false,
+        message: 'No session ID provided',
+      };
+    }
+
+    const sessions = await this.sessionManagerService.getActiveSessions(
+      user.userId,
+    );
+    const currentSession = sessions.find((s) => s.id === user.sessionId);
+
+    return {
+      active: !!currentSession,
+      session: currentSession || null,
+      totalActiveSessions: sessions.length,
     };
   }
 
@@ -154,7 +188,13 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@CurrentUser() user: CurrentUser) {
+    // Révoquer les tokens
     await this.logoutUseCase.execute(user.userId);
+
+    // Terminer la session si elle existe
+    if (user.sessionId) {
+      await this.sessionManagerService.terminateSession(user.sessionId);
+    }
   }
 
   @Get('profile')

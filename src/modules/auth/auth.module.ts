@@ -28,7 +28,7 @@ import { SecurityModule } from '@modules/security/security.module';
   imports: [
     PrismaModule,
     PassportModule,
-    forwardRef(() => SecurityModule), // Utiliser forwardRef pour éviter la dépendance circulaire
+    forwardRef(() => SecurityModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -45,7 +45,16 @@ import { SecurityModule } from '@modules/security/security.module';
   controllers: [AuthController],
   providers: [
     // Guards and Strategies
-    JwtStrategy,
+    {
+      provide: JwtStrategy,
+      useFactory: (
+        configService: ConfigService,
+        sessionManagerService: any,
+      ) => {
+        return new JwtStrategy(configService, sessionManagerService);
+      },
+      inject: [ConfigService, 'ISessionManagerService'],
+    },
 
     // Repositories (seulement ceux qui ne sont pas déjà dans SecurityModule)
     {
