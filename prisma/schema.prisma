@@ -114,3 +114,34 @@ enum SecurityEventType {
   SESSION_CREATED
   SESSION_EXPIRED
 }
+
+model EncryptionKey {
+  id        String    @id @default(uuid())
+  version   Int       @unique @default(autoincrement())
+  key       String // Clé chiffrée avec la master key
+  algorithm String    @default("aes-256-gcm")
+  isActive  Boolean   @default(true) @map("is_active")
+  rotatedAt DateTime? @map("rotated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  expiresAt DateTime  @map("expires_at")
+
+  @@index([version])
+  @@index([isActive])
+  @@map("encryption_keys")
+}
+
+// Ajouter un champ pour stocker les données sensibles chiffrées
+model EncryptedData {
+  id            String   @id @default(uuid())
+  entityType    String   @map("entity_type") // Ex: "user", "payment", etc.
+  entityId      String   @map("entity_id")
+  fieldName     String   @map("field_name") // Ex: "ssn", "creditCard", etc.
+  encryptedData String   @map("encrypted_data") // Format: version:iv:authTag:ciphertext
+  keyVersion    Int      @map("key_version")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([entityType, entityId, fieldName])
+  @@index([keyVersion])
+  @@map("encrypted_data")
+}
